@@ -36,7 +36,7 @@ resource "aws_internet_gateway" "igw" {
      vpc = true
   }
   
-  resource "aws_nat_gateway" "nat gateways" {
+  resource "aws_nat_gateway" "nat-gateways" {
   for_each = var.public_subnets
     allocation_id = aws_eip[each.value["name"]].id
     subnet_id = aws_subnet[each.value["name"]].id
