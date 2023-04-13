@@ -20,9 +20,23 @@ resource "aws_subnet" "public_subnets" {
   
 }
 
+## Internet Gateway
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
+  
+  tags = merge(
+    var.tags, 
+      { Name = "${var.env}-igw" }
+  )
+  }
+
 ## public route table
 resource "aws_route_table" "public-route-table" {
   vpc_id = aws_vpc.main.id
+  route {
+     cidr_block = "0.0.0.0/0"
+     gateway_id = aws_internet_gateway.igw.id
+  }
 
    for_each = var.public_subnets
     tags = merge(
@@ -68,3 +82,13 @@ for_each = var.private_subnets
   subnet_id = lookup(lookup(aws_subnet.private_subnets, each.value["name"], null), "id", null)
   route_table_id = aws_route_table.private-route-table[each.value["name"]].id
 }
+
+## Internet Gateway
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
+  
+  tags = merge(
+    var.tags, 
+      { Name = "${var.env}-igw" }
+  )
+  }
