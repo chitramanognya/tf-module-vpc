@@ -71,8 +71,12 @@ for_each = var.public_subnets
 ## private subnets
 resource "aws_subnet" "private_subnets" {
   vpc_id = aws_vpc.main.id
-
   for_each = var.private_subnets
+  route {
+     cidr_block = "0.0.0.0/0"
+     nat_gateway_id = aws_nat_gateway.nat-gateways[each.value["availability_zone"]].id
+  }
+  
     cidr_block = each.value["cidr_block"]
   availability_zone = each.value["availability_zone"]
   tags = merge(
